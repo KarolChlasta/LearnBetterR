@@ -1,1 +1,1 @@
-# TipsAndTricksR
+# Learn Better R
