@@ -75,7 +75,7 @@ tryCatch({
 error = print
 )
 
-# Filtering rows
+### Filtering rows
 # track_metadata_tbl has been pre-defined
 glimpse(track_metadata_tbl)
 
@@ -87,5 +87,40 @@ track_metadata_tbl %>%
   filter(year >= 1960, year < 1970)
 
 ### Arranging rows
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
 
+# Manipulate the track metadata
+track_metadata_tbl %>%
+  # Select columns
+  select(artist_name, release, title, year) %>%
+  # Filter rows
+  filter(year >= 1960, year < 1970) %>%
+  # Arrange rows
+  arrange(artist_name, desc(year), title)
 
+### Mutating columns
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
+
+# Manipulate the track metadata
+track_metadata_tbl %>%
+  # Select columns
+  select(title, duration) %>%
+  # Mutate columns
+  mutate( duration_minutes = duration / 60)
+
+### Summarizing columns
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
+
+# Manipulate the track metadata
+track_metadata_tbl %>%
+  # Select columns
+  select(title, duration) %>%
+  # Mutate columns
+  mutate(duration_minutes = duration / 60) %>%
+  # Summarize columns
+  summarize(mean_duration_minutes = mean(duration_minutes))
+
+######

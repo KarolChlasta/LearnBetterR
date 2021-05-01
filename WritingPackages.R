@@ -131,7 +131,7 @@ data_summary <- function(x, na.rm = TRUE){
   
 }
 
-# Exporting functions
+### Exporting functions
 
 #' Summary of Numeric Columns
 #'
@@ -174,7 +174,7 @@ data_summary <- function(x, na.rm = TRUE){
   
 }
 
-# Documenting function return values
+### Documenting function return values
 #' Data Summary for Numeric Columns
 #'
 #' Custom summaries of numeric data in a provided data frame
@@ -208,4 +208,105 @@ data_summary <- function(x, na.rm = TRUE){
   
 }
 
-# Additional documentation
+### Additional documentation
+#' Summary of Numeric Columns
+#' Generate specific summaries of numeric columns in a data frame
+#'
+#' @param x A data frame. Non-numeric columns will be removed
+#' @param na.rm A logical indicating whether missing values should be removed
+#' @import dplyr
+#' @import purrr
+#' @importFrom tidyr gather
+#' @export
+#' @examples
+#' data_summary(iris)
+#' data_summary(airquality, na.rm = FALSE)
+#' 
+#' @return This function returns a \code{data.frame} including columns: 
+#' \itemize{
+#'  \item ID
+#'  \item min
+#'  \item median
+#'  \item sd
+#'  \item max
+#' }
+#'
+## Add in the author of the `data_summary()` function
+#' @author My Name <myemail@example.com>
+## List the `summary()` function (from the `base` package)
+#' @seealso \link[base]{summary}
+data_summary <- function(x, na.rm = TRUE){
+  
+  num_data <- select_if(x, .predicate = is.numeric) 
+  
+  map_df(num_data, .f = numeric_summary, na.rm = na.rm, .id = "ID")
+  
+}
+
+### Adding package documentation
+
+#' Custom Data Summaries 
+#'
+#' Easily generate custom data frame summaries
+#' @author Karol Chlasta \email{karol@chlasta.pl}
+#' @docType package
+#' @name datasummary
+"_PACKAGE"
+
+
+### Documenting data objects
+
+#' Random Weather Data
+#'
+#' A dataset containing randomly generated weather data.
+#'
+#' @format A data frame of 7 rows and 3 columns
+#' \describe{
+#'  \item{Day}{Numeric values giving day of the week, 1 = Monday, 7 = Sunday}
+#'  \item{Temp}{Temperature}
+#'  \item{Weather}{Weather}
+#' }
+#' @source Randomly generated data
+"weather"
+
+### Creating man files
+
+# Generate package documentation
+document("datasummary")
+
+# Examine the contents of the man directory
+dir("datasummary/man")
+
+# View the documentation for the data_summary function
+help("data_summary")
+
+# View the documentation for the weather dataset
+help("weather")
+
+### Running a check
+
+# Check your package
+check("datasummary")
+
+### Undocumented parameters
+
+#' Numeric Summaries
+#' Summarises numeric data and returns a data frame containing the minimum value, median, standard deviation, and maximum value.
+#'
+#' @param x a numeric vector containing the values to summarize.
+#' @param na.rm a logical value indicating whether NA values should be stripped before the computation proceeds.
+numeric_summary <- function(x, na.rm){
+  
+  if(!is.numeric(x)){
+    stop("data must be numeric")
+  }
+  
+  data.frame( min = min(x, na.rm = na.rm),
+              median = median(x, na.rm = na.rm),
+              sd = sd(x, na.rm = na.rm),
+              max = max(x, na.rm = na.rm))
+}
+
+### Undefined global variables
+
+
