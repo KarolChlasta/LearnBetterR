@@ -309,4 +309,128 @@ numeric_summary <- function(x, na.rm){
 
 ### Undefined global variables
 
+#' datasummary: Custom Data Summaries
+#'
+#' Easily generate custom data frame summaries
+#'
+#' @docType package
+#' @name datasummary
+"_PACKAGE"
+
+# Update this function call
+utils::globalVariables(c("weather", "Temp"))
+
+### Adding the import to the description
+
+# Add dplyr as an imported dependency to the DESCRIPTION file
+use_package("dplyr", pkg = "datasummary")
+
+# Add purrr as an imported dependency to the DESCRIPTION file
+use_package("purrr", pkg = "datasummary")
+
+# Add tidyr as an imported dependency to the DESCRIPTION file
+use_package("tidyr", pkg = "datasummary")
+
+### Building an R package
+
+# Build the package
+build("datasummary")
+
+# Examine the contents of the current directory
+dir()
+
+### Setting up the test structure
+
+# Set up the test framework
+use_testthat("datasummary")
+
+# Look at the contents of the package root directory
+dir("datasummary")
+
+# Look at the contents of the new folder which has been created 
+dir("datasummary/tests")
+
+### Writing an individual test
+
+# Create a summary of the iris dataset using your data_summary() function
+iris_summary <- data_summary(iris)
+
+# Count how many rows are returned
+summary_rows <- nrow(iris_summary)
+
+# Use expect_equal to test that calling data_summary() on iris returns 4 rows
+expect_equal(summary_rows, 4)
+
+### Testing for equality
+
+result <- data_summary(weather)
+
+# Update this test so it passes
+expect_equal(result$sd, c(2.1, 3.6), tolerance = 1000)
+
+expected_result <- list(
+  ID = c("Day", "Temp"),
+  min = c(1L, 14L),
+  median = c(4L, 19L),
+  sd = c(2.16024689946929, 3.65148371670111),
+  max = c(7L, 24L)
+)
+
+# Write a passing test that compares expected_result to result
+expect_equivalent(result, expected_result)
+
+### Testing errors
+
+# Create a vector containing the numbers 1 through 10
+my_vector <- 1:10
+
+# Look at what happens when we apply this vector as an argument to data_summary()
+data_summary(my_vector)
+
+# Test if running data_summary() on this vector returns an error
+expect_error(data_summary(my_vector), "no applicable method for 'tbl_vars' applied to an object of class \"c('integer', 'numeric')\"")
+
+### Testing warnings
+
+# Run data_summary on the airquality dataset with na.rm set to FALSE
+data_summary(airquality, na.rm = FALSE)
+
+# Use expect_warning to formally test this
+expect_warning(data_summary(airquality, na.rm = FALSE))
+
+### Testing non-exported functions
+
+# Expected result
+expected <- data.frame(min = 14L, median = 19L, sd = 3.65148371670111, max = 24L)
+
+# Create variable result by calling numeric summary on the temp column of the weather dataset
+result <- datasummary:::numeric_summary(weather$Temp, na.rm = TRUE)
+
+# Test that the value returned matches the expected value
+expect_equal(result, expected)
+
+### Grouping tests
+
+# Use context() and test_that() to group the tests below together
+context("Test data_summary()")
+
+test_that("data_summary() handles errors correctly", {
+  
+  # Create a vector
+  my_vector <- 1:10
+  
+  # Use expect_error()
+  expect_error(data_summary(my_vector))
+  
+  # Use expect_warning()
+  expect_warning(data_summary(airquality, na.rm = FALSE))
+  
+})
+
+### Executing unit tests
+
+# Run the tests on the datasummary package
+test("datasummary")
+
+
 

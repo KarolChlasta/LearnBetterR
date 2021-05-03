@@ -123,4 +123,152 @@ track_metadata_tbl %>%
   # Summarize columns
   summarize(mean_duration_minutes = mean(duration_minutes))
 
-######
+### Mother's little helper (1)
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
+
+track_metadata_tbl %>%
+  # Select columns starting with artist
+  select(starts_with("artist"))
+
+track_metadata_tbl %>%
+  # Select columns ending with id
+  select(ends_with("id"))
+
+### Mother's little helper (2)
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
+
+track_metadata_tbl %>%
+  # Select columns containing ti
+  select(contains("ti"))
+
+track_metadata_tbl %>%
+  # Select columns matching ti.?t
+  select(matches("ti.?t"))
+
+### Selecting unique rows
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
+
+track_metadata_tbl %>%
+  # Only return rows with distinct artist_name
+  distinct(artist_name)
+
+### Common people
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
+
+track_metadata_tbl %>%
+  # Count the artist_name values
+  count(artist_name, sort = TRUE) %>%
+  # Restrict to top 20
+  top_n(20)
+
+### Collecting data back from Spark
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
+
+results <- track_metadata_tbl %>%
+  # Filter where artist familiarity is greater than 0.9
+  filter(artist_familiarity > 0.9)
+
+# Examine the class of the results
+class(results)
+
+# Collect your results
+collected <- results %>%
+  collect()
+
+# Examine the class of the collected results
+class(collected)
+
+### Storing intermediate results
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
+
+computed <- track_metadata_tbl %>%
+  # Filter where artist familiarity is greater than 0.8
+  filter(artist_familiarity > 0.8) %>%
+  # Compute the results
+  compute("familiar_artists")
+
+# See the available datasets
+src_tbls(spark_conn)
+
+# Examine the class of the computed results
+class(computed)
+
+### Groups: great for music, great for data
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
+
+duration_by_artist <- track_metadata_tbl %>%
+  # Group by artist
+  group_by(artist_name) %>%
+  # Calc mean duration
+  summarize(mean_duration = mean(duration))
+
+duration_by_artist %>%
+  # Sort by ascending mean duration
+  arrange(mean_duration)
+
+duration_by_artist %>%
+  # Sort by descending mean duration
+  arrange(desc(mean_duration))
+
+### Groups of mutants
+# track_metadata_tbl has been pre-defined
+track_metadata_tbl
+
+track_metadata_tbl %>%
+  # Group by artist
+  group_by(artist_name) %>%
+  # Calc time since first release
+  mutate(time_since_first_release = year - min(year)) %>%
+  # Arrange by descending time since first release
+  arrange(desc(time_since_first_release))
+
+### Advanced Selection II: The SQL
+# Write SQL query
+query <- "SELECT * FROM track_metadata WHERE year < 1935 AND duration > 300"
+
+# Run the query
+(results <- dbGetQuery(spark_conn, query))
+
+### Left joins
+# track_metadata_tbl and artist_terms_tbl have been pre-defined
+track_metadata_tbl
+artist_terms_tbl
+
+# Left join artist terms to track metadata by artist_id
+joined <- left_join(track_metadata_tbl, artist_terms_tbl, by = c("artist_id"))
+
+# How many rows and columns are in the joined table?
+dim(joined)
+
+### Anti joins
+# track_metadata_tbl and artist_terms_tbl have been pre-defined
+track_metadata_tbl
+artist_terms_tbl
+
+# Anti join artist terms to track metadata by artist_id
+joined <- anti_join(track_metadata_tbl, artist_terms_tbl, by = c("artist_id"))
+
+# How many rows and columns are in the joined table?
+dim(joined)
+
+### Semi joins
+# track_metadata_tbl and artist_terms_tbl have been pre-defined
+track_metadata_tbl
+artist_terms_tbl
+
+# Semi join artist terms to track metadata by artist_id
+joined <- semi_join(track_metadata_tbl, artist_terms_tbl, by = c("artist_id"))
+
+# How many rows and columns are in the joined table?
+dim(joined)
+
+###### Going Native: Use The Native Interface to Manipulate Spark DataFrames
+
+### Transforming continuous variables to logical
