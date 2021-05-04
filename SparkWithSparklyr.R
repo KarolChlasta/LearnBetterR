@@ -605,7 +605,7 @@ ggplot(residuals, aes(residual, color = model)) +
   # Add a vertical line through zero
   geom_vline(xintercept = 0)
 
-### Comparing model performance
+### Comparing model performance2
 # both_responses has been pre-defined
 both_responses
 
